@@ -1,6 +1,9 @@
 package game.crossword;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,15 +22,36 @@ public class Crosswords {
     private Table table;
     private List<Part> parts;
     private int remain;
+    private static final String DEFAULT_PARTITION =
+            "0 0 0 1 1 1 2 2 2;" +
+            "0 0 0 1 1 1 2 2 2;" +
+            "0 0 0 1 1 1 2 2 2;" +
+            "3 3 3 4 4 4 5 5 5;" +
+            "3 3 3 4 4 4 5 5 5;" +
+            "3 3 3 4 4 4 5 5 5;" +
+            "6 6 6 7 7 7 8 8 8;" +
+            "6 6 6 7 7 7 8 8 8;" +
+            "6 6 6 7 7 7 8 8 8;";
+    private static final Map<String, Splitter> splitters = Maps.newHashMap();
+
+    static {
+        splitters.put(";", Splitter.on(";").omitEmptyStrings().trimResults());
+        splitters.put(",", Splitter.on(",").omitEmptyStrings().trimResults());
+        splitters.put(" ", Splitter.on(" ").omitEmptyStrings().trimResults());
+    }
 
     public Crosswords() {
-        init();
+        init(DEFAULT_PARTITION);
+    }
+
+    public Crosswords(String partition) {
+        init(partition);
     }
 
     public void showTable() {
         for (int row = 0; row < 9; row++) {
             for (int column = 0; column < 9; column++) {
-                System.out.print(table.findNode(row,column).getValue() + " ");
+                System.out.print(table.findNode(row, column).getValue() + " ");
             }
             System.out.print("\n");
         }
@@ -36,7 +60,7 @@ public class Crosswords {
     public void showPart() {
         for (int row = 0; row < 9; row++) {
             for (int column = 0; column < 9; column++) {
-                System.out.print(table.findNode(row, column).getPart() + " ");
+                System.out.print(table.findNode(row, column).getParts() + " ");
             }
             System.out.print("\n");
         }
@@ -45,60 +69,59 @@ public class Crosswords {
     public void showPossibility() {
         for (int row = 0; row < 9; row++) {
             for (int column = 0; column < 9; column++) {
-                System.out.print(table.findNode(row,column).getPossibleValue().size() + " ");
+                System.out.print(table.findNode(row, column).getPossibleValue().size() + " ");
             }
             System.out.print("\n");
         }
     }
 
-    public void init() {
+    public void init(String partition) {
         remain = 81;
         table = new Table();
-        initParts();
-        for(int index = 0;index < 9;index++){
-            for (Map.Entry<Integer,Integer> set:parts.get(index).getLocation()){
-                table.putNode(set.getKey(), set.getValue(), new Node(set.getKey(),set.getValue(),index));
+        initParts(partition);
+        for (int index = 0; index < 9; index++) {
+            for (Map.Entry<Integer, Integer> set : parts.get(index).getLocation()) {
+                table.putNode(set.getKey(), set.getValue(), new Node(set.getKey(), set.getValue(), index));
             }
         }
     }
 
     public void input(String s) {
-        if (!s.matches("([1-9] ){2}[1-9]")) {
-            System.out.println("格式不正确");
-            return;
-        }
-        String[] input = s.split(" ");
-        input(Integer.valueOf(input[0]) - 1, Integer.valueOf(input[1]) - 1, Integer.valueOf(input[2]));
+        Preconditions.checkArgument(s.matches("([1-9] ){2}[1-9]"), "invalid input");
+        List<String> input = splitters.get(" ").splitToList(s);
+        input(Integer.valueOf(input.get(0)) - 1, Integer.valueOf(input.get(1)) - 1, Integer.valueOf(input.get(2)));
     }
 
-    public void input(int row, int column, int value){
-        confirm(table.findNode(row,column), value);
+    public void input(int row, int column, int value) {
+        confirm(table.findNode(row, column), value);
     }
 
     public void inputLines(List<String> lines) {
-        if (lines.size() != 9) {
-            System.out.println("行数不正确");
-            return;
-        }
+        Preconditions.checkArgument(lines.size() == 9, "number of rows invalid");
         for (int row = 0; row < 9; row++) {
-            if (!lines.get(row).matches("([0-9] ){8}[0-9]")) {
-                System.out.println("格式不正确");
-                return;
-            }
-            String[] line = lines.get(row).split(" ");
+            Preconditions.checkArgument(lines.get(row).matches("([0-9] ){8}[0-9]"), String.format("line %d invalid", row));
+            List<String> line = splitters.get(" ").splitToList(lines.get(row));
             for (int column = 0; column < 9; column++) {
-                if ("0".equals(line[column])) {
+                if ("0".equals(line.get(column))) {
                     continue;
                 }
-                input(row, column, Integer.valueOf(line[column]));
+                input(row, column, Integer.valueOf(line.get(column)));
             }
         }
     }
 
-    public boolean calculate(){
+    public void addExtraPart(String s) {
+        addPart(s);
+        int index = parts.size() - 1;
+        for (Map.Entry<Integer, Integer> location : parts.get(index).getLocation()) {
+            table.findNode(location.getKey(), location.getValue()).getParts().add(index);
+        }
+    }
+
+    public boolean calculate() {
         exactCalculate();
         showTable();
-        if(!guessCalculate(0)){
+        if (!guessCalculate(0)) {
             logger.info("no answer");
             return false;
         }
@@ -106,40 +129,40 @@ public class Crosswords {
         return true;
     }
 
-    private boolean guessCalculate(int i) {
-        if(remain == 0){
+    private boolean guessCalculate(int deep) {
+        if (remain == 0) {
             return true;
         }
-        logger.info("start to guess");
+        logger.info("start to guess, deep:{}", deep);
         Node node = findMinPossibleNode();
-        if(node == null){
+        if (node == null) {
             return false;
         }
         int oldRemain = remain;
         String oldTable = JsonUtils.serialize(table);
         int oldNodeRow = node.getRow();
         int oldNodeColumn = node.getColumn();
-        for(Integer value : Sets.newHashSet(node.getPossibleValue())){
+        for (Integer value : Sets.newHashSet(node.getPossibleValue())) {
             boolean success = true;
-            try{
-                confirm(node,value);
+            try {
+                confirm(node, value);
                 exactCalculate();
                 checkTable();
-            }catch (Exception e){
-                System.out.println(i+"========"+oldRemain+"|"+remain+"failed========");
+            } catch (Exception e) {
+                System.out.println(deep + "========" + oldRemain + "|" + remain + "failed========");
                 showTable();
                 success = false;
             }
-            if(success){
-                System.out.println(i+"========"+oldRemain+"|"+remain+"success========");
+            if (success) {
+                System.out.println(deep + "========" + oldRemain + "|" + remain + "success========");
                 showTable();
-                success = guessCalculate(i+1);
-                if(success){
+                success = guessCalculate(deep + 1);
+                if (success) {
                     return true;
                 }
             }
-            table = JsonUtils.deSerialize(oldTable,Table.class);
-            node = table.findNode(oldNodeRow,oldNodeColumn);
+            table = JsonUtils.deSerialize(oldTable, Table.class);
+            node = table.findNode(oldNodeRow, oldNodeColumn);
             remain = oldRemain;
         }
         return false;
@@ -151,19 +174,19 @@ public class Crosswords {
         Set<Integer> partSet = Sets.newHashSet();
         int value = 0;
         for (int i = 0; i < 9; i++) {
-            for(int j = 0; j < 9; j++) {
-                value = table.findNode(i,j).getValue();
-                if(value != 0){
-                    if(rowSet.contains(value)){
+            for (int j = 0; j < 9; j++) {
+                value = table.findNode(i, j).getValue();
+                if (value != 0) {
+                    if (rowSet.contains(value)) {
                         logger.error("conflict");
                         throw new RuntimeException("conflict");
                     }
                     rowSet.add(value);
                 }
 
-                value = table.findNode(j,i).getValue();
-                if(value != 0){
-                    if(columnSet.contains(value)){
+                value = table.findNode(j, i).getValue();
+                if (value != 0) {
+                    if (columnSet.contains(value)) {
                         logger.error("conflict");
                         throw new RuntimeException("conflict");
                     }
@@ -173,11 +196,11 @@ public class Crosswords {
             rowSet.clear();
             columnSet.clear();
         }
-        for(Part part : parts){
+        for (Part part : parts) {
             for (Map.Entry<Integer, Integer> location : part.getLocation()) {
-                value = table.findNode(location.getKey(),location.getValue()).getValue();
-                if(value != 0){
-                    if(partSet.contains(value)){
+                value = table.findNode(location.getKey(), location.getValue()).getValue();
+                if (value != 0) {
+                    if (partSet.contains(value)) {
                         logger.error("conflict");
                         throw new RuntimeException("conflict");
                     }
@@ -205,99 +228,82 @@ public class Crosswords {
 
     private void exactCalculate() {
         int lastRemain;
-        do{
+        do {
             lastRemain = remain;
-            for(Part part : parts){
-                for(Integer i : Sets.newHashSet(part.getRemain())){
+            for (Part part : parts) {
+                for (Integer i : Sets.newHashSet(part.getRemain())) {
                     Node possibleNode = null;
                     int times = 0;
-                    for(Map.Entry<Integer,Integer> location : part.getLocation()){
+                    for (Map.Entry<Integer, Integer> location : part.getLocation()) {
                         Node node = table.findNode(location.getKey(), location.getValue());
-                        if(node.getPossibleValue().contains(i)){
+                        if (node.getPossibleValue().contains(i)) {
                             possibleNode = node;
                             times++;
                         }
                     }
-//                    if(times == 0){
-//                        logger.error("found impossible number:{}, part:{}", i, JsonUtils.serialize(part));
-//                        showTable();
-//                        throw new RuntimeException("conflict number");
-//                    }
-                    if(times == 1){
-                        confirm(possibleNode,i);
+                    if (times == 1) {
+                        confirm(possibleNode, i);
                     }
                 }
             }
-        }while(lastRemain != remain);
+        } while (lastRemain != remain);
     }
 
-    private void deleteImpossibleNumber(Node node){
-        if(node.getValue() == 0){
+    private void deleteImpossibleNumber(Node node) {
+        if (node.getValue() == 0) {
             return;
         }
-        for(int i = 0; i<9;i++){
+        for (int i = 0; i < 9; i++) {
             deleteAndConfirm(table.findNode(i, node.getColumn()), node);
             deleteAndConfirm(table.findNode(node.getRow(), i), node);
         }
-        for(Map.Entry<Integer,Integer> location:parts.get(node.getPart()).getLocation()){
-            deleteAndConfirm(table.findNode(location.getKey(), location.getValue()), node);
+        for (Integer part : node.getParts()) {
+            for (Map.Entry<Integer, Integer> location : parts.get(part).getLocation()) {
+                deleteAndConfirm(table.findNode(location.getKey(), location.getValue()), node);
+            }
         }
     }
 
     private void deleteAndConfirm(Node node, Node baseNode) {
         node.getPossibleValue().remove(baseNode.getValue());
-        if(node.getPossibleValue().size() == 1){
+        if (node.getPossibleValue().size() == 1) {
             confirm(node, node.getPossibleValue().iterator().next());
         }
     }
 
-    private void handleEveryNode(ElementHandler handler) {
-        for (int row = 0; row < 9; row++) {
-            for (int column = 0; column < 9; column++) {
-                handler.handle(row, column);
-            }
-        }
-    }
-
     private void confirm(Node node, int value) {
-        if(node == null){
+        if (node == null) {
             return;
         }
-//        if(!node.getPossibleValue().contains(value)){
-//            logger.error("found impossible number:{}, node:{}", value, JsonUtils.serialize(node));
-//            showTable();
-//            throw new RuntimeException("conflict number");
-//        }
         node.setValue(value);
         node.getPossibleValue().clear();
-        parts.get(node.getPart()).getRemain().remove(value);
+        for (Integer part : node.getParts()) {
+            parts.get(part).getRemain().remove(value);
+        }
         remain--;
         deleteImpossibleNumber(node);
     }
 
-    private void initParts() {
-        parts = Lists.newArrayList();
-        initPart("0 0,0 1,0 2,1 0,1 1,1 2,2 0,2 1,2 2");
-        initPart("0 3,0 4,0 5,1 3,1 4,1 5,2 3,2 4,2 5");
-        initPart("0 6,0 7,0 8,1 6,1 7,1 8,2 6,2 7,2 8");
-        initPart("3 0,3 1,3 2,4 0,4 1,4 2,5 0,5 1,5 2");
-        initPart("3 3,3 4,3 5,4 3,4 4,4 5,5 3,5 4,5 5");
-        initPart("3 6,3 7,3 8,4 6,4 7,4 8,5 6,5 7,5 8");
-        initPart("6 0,6 1,6 2,7 0,7 1,7 2,8 0,8 1,8 2");
-        initPart("6 3,6 4,6 5,7 3,7 4,7 5,8 3,8 4,8 5");
-        initPart("6 6,6 7,6 8,7 6,7 7,7 8,8 6,8 7,8 8");
+    private void initParts(String partition) {
+        List<String> partStrings = splitters.get(";").splitToList(partition);
+        Preconditions.checkArgument(partStrings.size() == 9, "partition size is invalid");
+        parts = Lists.newLinkedList(Sets.newHashSet(new Part(), new Part(), new Part(), new Part(), new Part(), new Part(), new Part(), new Part(), new Part()));
+        for (int row = 0; row < 9; row++) {
+            Preconditions.checkArgument(partStrings.get(row).matches("([0-8] ){8}([0-8])"), "partition is invalid: " + partStrings.get(row));
+            List<String> index = splitters.get(" ").splitToList(partStrings.get(row));
+            for (int column = 0; column < 9; column++) {
+                parts.get(Integer.valueOf(index.get(column))).getLocation().add(new AbstractMap.SimpleEntry<Integer, Integer>(row, column));
+            }
+        }
     }
 
-    private void initPart(String s) {
-        if(!s.matches("([0-8] [0-8],){8}([0-8] [0-8])")){
-            System.out.println("区域格式错误");
-            return;
-        }
-        String[] nodes = s.split(",");
-        Set<Map.Entry<Integer,Integer>> set = Sets.newHashSet();
+    private void addPart(String s) {
+        Preconditions.checkArgument(s.matches("([0-8] [0-8],){8}([0-8] [0-8])"), "partition is invalid: " + s);
+        List<String> nodes = splitters.get(",").splitToList(s);
+        Set<Map.Entry<Integer, Integer>> set = Sets.newHashSet();
         for (String node : nodes) {
-            String[] entry = node.split(" ");
-            set.add(new AbstractMap.SimpleEntry<Integer, Integer>(Integer.valueOf(entry[0]), Integer.valueOf(entry[1])));
+            List<String> entry = splitters.get(" ").splitToList(node);
+            set.add(new AbstractMap.SimpleEntry<Integer, Integer>(Integer.valueOf(entry.get(0)), Integer.valueOf(entry.get(1))));
         }
         Part part = new Part();
         part.setLocation(set);

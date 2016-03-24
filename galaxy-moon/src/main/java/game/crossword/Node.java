@@ -1,8 +1,10 @@
 package game.crossword;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -12,7 +14,7 @@ public class Node {
     private int value;
     private int row;
     private int column;
-    private int part;
+    private List<Integer> parts;
     private Set<Integer> possibleValue;
 
     public Node(){
@@ -23,7 +25,7 @@ public class Node {
         value = 0;
         this.row = row;
         this.column = column;
-        this.part = part;
+        parts = Lists.newArrayList(part);
         possibleValue = Sets.newHashSet(1,2,3,4,5,6,7,8,9);
     }
 
@@ -51,12 +53,12 @@ public class Node {
         this.column = column;
     }
 
-    public int getPart() {
-        return part;
+    public List<Integer> getParts() {
+        return parts;
     }
 
-    public void setPart(int part) {
-        this.part = part;
+    public void setPart(List<Integer> parts) {
+        this.parts = parts;
     }
 
     public Set<Integer> getPossibleValue() {

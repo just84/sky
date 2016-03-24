@@ -14,6 +14,7 @@ public class Part {
     private Set<Integer> remain;
 
     public Part(){
+        location = Sets.newHashSet();
         remain = Sets.newHashSet(1,2,3,4,5,6,7,8,9);
     }
 
