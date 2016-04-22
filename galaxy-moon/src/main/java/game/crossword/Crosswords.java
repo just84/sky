@@ -1,13 +1,12 @@
 package game.crossword;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.JsonUtils;
+import utils.Utils;
 
 import java.util.AbstractMap;
 import java.util.List;
@@ -32,13 +31,6 @@ public class Crosswords {
             "6 6 6 7 7 7 8 8 8;" +
             "6 6 6 7 7 7 8 8 8;" +
             "6 6 6 7 7 7 8 8 8;";
-    private static final Map<String, Splitter> splitters = Maps.newHashMap();
-
-    static {
-        splitters.put(";", Splitter.on(";").omitEmptyStrings().trimResults());
-        splitters.put(",", Splitter.on(",").omitEmptyStrings().trimResults());
-        splitters.put(" ", Splitter.on(" ").omitEmptyStrings().trimResults());
-    }
 
     public Crosswords() {
         init(DEFAULT_PARTITION);
@@ -88,7 +80,7 @@ public class Crosswords {
 
     public void input(String s) {
         Preconditions.checkArgument(s.matches("([1-9] ){2}[1-9]"), "invalid input");
-        List<String> input = splitters.get(" ").splitToList(s);
+        List<String> input = Utils.getSplitter(" ").splitToList(s);
         input(Integer.valueOf(input.get(0)) - 1, Integer.valueOf(input.get(1)) - 1, Integer.valueOf(input.get(2)));
     }
 
@@ -100,7 +92,7 @@ public class Crosswords {
         Preconditions.checkArgument(lines.size() == 9, "number of rows invalid");
         for (int row = 0; row < 9; row++) {
             Preconditions.checkArgument(lines.get(row).matches("([0-9] ){8}[0-9]"), String.format("line %d invalid", row));
-            List<String> line = splitters.get(" ").splitToList(lines.get(row));
+            List<String> line = Utils.getSplitter(" ").splitToList(lines.get(row));
             for (int column = 0; column < 9; column++) {
                 if ("0".equals(line.get(column))) {
                     continue;
@@ -285,12 +277,12 @@ public class Crosswords {
     }
 
     private void initParts(String partition) {
-        List<String> partStrings = splitters.get(";").splitToList(partition);
+        List<String> partStrings = Utils.getSplitter(";").splitToList(partition);
         Preconditions.checkArgument(partStrings.size() == 9, "partition size is invalid");
         parts = Lists.newLinkedList(Sets.newHashSet(new Part(), new Part(), new Part(), new Part(), new Part(), new Part(), new Part(), new Part(), new Part()));
         for (int row = 0; row < 9; row++) {
             Preconditions.checkArgument(partStrings.get(row).matches("([0-8] ){8}([0-8])"), "partition is invalid: " + partStrings.get(row));
-            List<String> index = splitters.get(" ").splitToList(partStrings.get(row));
+            List<String> index = Utils.getSplitter(" ").splitToList(partStrings.get(row));
             for (int column = 0; column < 9; column++) {
                 parts.get(Integer.valueOf(index.get(column))).getLocation().add(new AbstractMap.SimpleEntry<Integer, Integer>(row, column));
             }
@@ -299,10 +291,10 @@ public class Crosswords {
 
     private void addPart(String s) {
         Preconditions.checkArgument(s.matches("([0-8] [0-8],){8}([0-8] [0-8])"), "partition is invalid: " + s);
-        List<String> nodes = splitters.get(",").splitToList(s);
+        List<String> nodes = Utils.getSplitter(",").splitToList(s);
         Set<Map.Entry<Integer, Integer>> set = Sets.newHashSet();
         for (String node : nodes) {
-            List<String> entry = splitters.get(" ").splitToList(node);
+            List<String> entry = Utils.getSplitter(" ").splitToList(node);
             set.add(new AbstractMap.SimpleEntry<Integer, Integer>(Integer.valueOf(entry.get(0)), Integer.valueOf(entry.get(1))));
         }
         Part part = new Part();

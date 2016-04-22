@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.qunar.flight:mct-api:1.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/qunar/flight/mct-api/1.0-SNAPSHOT/mct-api-1.0-20160412.060806-2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/qunar/flight/mct-api/1.0-SNAPSHOT/mct-api-1.0-20160412.060806-2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/qunar/flight/mct-api/1.0-SNAPSHOT/mct-api-1.0-20160412.060806-2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
