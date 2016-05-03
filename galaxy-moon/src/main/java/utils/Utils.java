@@ -1,14 +1,19 @@
 package utils;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.io.Closeables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by yibin on 16/3/30.
@@ -41,5 +46,32 @@ public class Utils {
             max = max > e ? max : e;
         }
         return max;
+    }
+
+    public static <T> Collection<Collection<T>> selectMfromN(Collection<T> N, int M){
+        if(M == 0 || N == null || N.isEmpty()){
+            return Lists.newArrayList();
+        }
+        Collection<Collection<T>> results = Sets.newHashSet();
+        if(M == 1){
+            for(T item : N){
+                Set<T> result = Sets.newHashSet();
+                result.add(item);
+                results.add(result);
+            }
+            return results;
+        }
+        for(T item : N){
+            Set<T> tempN = Sets.newHashSet();
+            tempN.addAll(N);
+            tempN.remove(item);
+            for (Collection<T> childResult : selectMfromN(tempN, M-1)) {
+                Set<T> result = Sets.newHashSet();
+                result.add(item);
+                result.addAll(childResult);
+                results.add(result);
+            }
+        }
+        return results;
     }
 }

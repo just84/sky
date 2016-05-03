@@ -1,8 +1,7 @@
-package game.crossword;
+package games.crossword;
 
 import com.google.common.collect.Sets;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 

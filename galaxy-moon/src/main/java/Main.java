@@ -1,32 +1,10 @@
-import api.Processor;
-import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.io.Files;
-import com.sun.javafx.binding.StringFormatter;
-import game.crossword.Crosswords;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import games.crossword.Crosswords;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import use.forecast.stock.CalculateService;
-import use.forecast.stock.Constant;
-import use.forecast.stock.FetchService;
 import use.forecast.stock.StockInfo;
-import utils.JsonUtils;
 
-import java.io.File;
-import java.math.BigDecimal;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URL;
-import java.text.DecimalFormat;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by yibin on 16/3/15.

@@ -1,4 +1,4 @@
-package game.crossword;
+package games.crossword;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;

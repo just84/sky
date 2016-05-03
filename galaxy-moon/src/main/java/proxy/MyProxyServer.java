@@ -3,6 +3,7 @@ package proxy;
 import com.google.common.base.Charsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.net.spi.DefaultProxySelector;
 import utils.GzipUtils;
 
 import java.io.BufferedReader;
@@ -14,6 +15,12 @@ import java.util.zip.GZIPInputStream;
 
 /**
  * Created by yibin on 16/4/20.
+ * target:
+ * 1.直传
+ * 2.分析数据
+ * 3.修改数据
+ * 4.行为分析
+ * final.幻
  */
 public class MyProxyServer {
     private static final Logger logger = LoggerFactory.getLogger(MyProxyServer.class);
@@ -22,6 +29,8 @@ public class MyProxyServer {
         try {
 
             ServerSocket serverSocket = new ServerSocket(port);
+            Proxy proxy = new Proxy(Proxy.Type.DIRECT, serverSocket.getLocalSocketAddress());
+            ProxySelector proxySelector = new DefaultProxySelector();
 
             while (true){
                 logger.info("start to wait");

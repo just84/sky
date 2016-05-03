@@ -1,13 +1,12 @@
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import pojo.Hasaki;
-import proxy.MyProxyServer;
+import com.google.common.util.concurrent.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.GzipUtils;
 
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Created by yibin on 16/3/24.
@@ -25,54 +24,62 @@ public class Test {
                 }
             });
 
+    private static ListeningExecutorService listeningExecutorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(5));
+    public static void todo(final String param, final CountDownLatch countDownLatch, final List<String> result) throws InterruptedException {
+        ListenableFuture listenableFuture = listeningExecutorService.submit(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                Thread.sleep(100);
+                System.out.println("exec " + param);
+                result.add(String.valueOf(param));
+                System.out.println("exec "+param+" finished");
+                return String.valueOf(param);
+            }
+        });
+        Futures.addCallback(listenableFuture, new FutureCallback<String>() {
+            @Override
+            public void onSuccess(String s) {
+                System.out.println("success " + s);
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                System.out.println("failed");
+                countDownLatch.countDown();
+            }
+        });
+    }
+
     public static void main(String[] args) throws Exception {
-        MyProxyServer server = new MyProxyServer();
-        server.start(8866);
+//        Host.start();
+
+
     }
 
     public static class A{
-        String i;
-        int j;
+        private static String i;
+        private static int j;
 
         public A(){}
         public A(String a,int b){
             i=a;
             j=b;
         }
-        public String getI() {
+        public static String getI() {
             return i;
         }
 
-        public void setI(String i) {
-            this.i = i;
+        public static void setI(String pi) {
+            i = pi;
         }
 
-        public int getJ() {
+        public static int getJ() {
             return j;
         }
 
-        public void setJ(int j) {
-            this.j = j;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            A a = (A) o;
-
-            if (j != a.j) return false;
-            if (!i.equals(a.i)) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = i.hashCode();
-            result = 31 * result + j;
-            return result;
+        public static void setJ(int pj) {
+            j = pj;
         }
     }
 }
