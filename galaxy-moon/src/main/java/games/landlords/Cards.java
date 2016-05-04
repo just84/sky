@@ -21,6 +21,13 @@ public class Cards {
     }
 
     public void put(CardModule cardModule, Integer number){
+        if(number < 0 || number > 4){
+            throw new IllegalArgumentException("number is "+number);
+        }
+        if((cardModule.equals(CardModule.CARD_BLACK_KING) || cardModule.equals(CardModule.CARD_RED_KING)) && number > 1){
+            throw new IllegalArgumentException("number of King is "+number);
+        }
+
         cards.put(cardModule,number);
     }
 

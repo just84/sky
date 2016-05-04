@@ -11,7 +11,7 @@ import java.util.List;
 public interface GroupType {
 
     /**
-     *
+     * 取得手牌中大于cards的所有选择
      * @param selfCards
      * @param cards
      * @return
@@ -27,8 +27,8 @@ public interface GroupType {
     boolean analyse(Cards cards);
 
     /**
-     * 取得能达到的最高维的位置
-     * 如，Single: 14, Double: 12, Sentence: 11
+     * 取得主卡能达到的最高维的位置
+     * 如，Single: 14, Double: 12, Sentence: 7
      * @return
      */
     int getTop();

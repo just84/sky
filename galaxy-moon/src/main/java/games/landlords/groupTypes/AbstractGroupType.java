@@ -7,7 +7,6 @@ import games.landlords.LocalTools;
 import utils.Utils;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,16 +14,34 @@ import java.util.List;
  */
 public abstract class AbstractGroupType implements GroupType {
 
+    /**
+     * 主卡，出牌主体的最小卡，如44455568：4
+     */
     private CardModule mainCard;
+    /**
+     * 主卡大小，如33344468：3
+     */
     private Integer mainCardSize;
+    /**
+     * 主卡长度，如33344468：2
+     */
     private Integer mainCardLength;
+    /**
+     * 附卡，如33344468：[6,8]
+     */
     private List<CardModule> attachCards;
+    /**
+     * 附卡大小，如33344468：1
+     */
     private Integer attachCardSize;
+    /**
+     * 附卡长度，如33344468：2
+     */
     private Integer attachCardLength;
 
     @Override
     public List<Cards> getSolution(Cards selfCards, Cards cards) {
-        if (cards == null || selfCards == null || LocalTools.getNumberOfCards(selfCards) < LocalTools.getNumberOfCards(cards)) {
+        if (cards == null || selfCards == null || LocalTools.getSizeOfCards(selfCards) < LocalTools.getSizeOfCards(cards)) {
             return null;
         }
         if (!analyse(cards)) {
@@ -56,6 +73,11 @@ public abstract class AbstractGroupType implements GroupType {
     }
 
     private List<Cards> getMainSolutions(Cards selfCards) {
+        if(mainCard == null || mainCardSize == 0 || mainCardLength == 0){
+            throw new IllegalArgumentException(
+                    String.format("main card data is illegal,mainCard:%s, mainCardSize:%d, mainCardLength:%d",
+                            mainCard, mainCardSize, mainCardLength));
+        }
         List<Cards> mainSolutions = Lists.newArrayList();
         for (Integer index = mainCard.getValue() + 1; index <= getTop() - mainCardLength; index++) {
             CardModule card = CardModule.getCardByValue(index);
@@ -79,6 +101,9 @@ public abstract class AbstractGroupType implements GroupType {
     }
 
     private List<Cards> getAttachSolutions(Cards restCards) {
+        if(attachCards == null || attachCards.size() == 0 || attachCardSize == 0 || attachCardLength == 0){
+            return Lists.newArrayList();
+        }
         List<CardModule> usableCards = Lists.newArrayList();
         for (CardModule cardModule : CardModule.values()) {
             if (restCards.get(cardModule) >= attachCardSize) {
@@ -143,6 +168,20 @@ public abstract class AbstractGroupType implements GroupType {
     }
 
     public void setAttachCardLength(Integer attachCardLength) {
+        this.attachCardLength = attachCardLength;
+    }
+
+    public void setCardInfo(CardModule mainCard, Integer mainCardSize, Integer mainCardLength){
+        setCardInfo(mainCard, mainCardSize, mainCardLength, null, 0, 0);
+    }
+
+    public void setCardInfo(CardModule mainCard, Integer mainCardSize, Integer mainCardLength,
+                            List<CardModule> attachCards, Integer attachCardSize, Integer attachCardLength ){
+        this.mainCard = mainCard;
+        this.mainCardSize = mainCardSize;
+        this.mainCardLength = mainCardLength;
+        this.attachCards = attachCards;
+        this.attachCardSize = attachCardSize;
         this.attachCardLength = attachCardLength;
     }
 }

@@ -3,7 +3,6 @@ package games.landlords;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +52,7 @@ public class Player {
     }
 
     public void getNoticed(Cards actionCards, Role actionRole) {
-        if (actionCards != null && LocalTools.getNumberOfCards(actionCards) != 0) {
+        if (actionCards != null && LocalTools.getSizeOfCards(actionCards) != 0) {
             LocalTools.addCards(record.get(actionRole), actionCards);
             LocalTools.addCards(allCardsRecord, actionCards);
             LocalTools.subCards(unknownCardsRecord, actionCards);
@@ -88,7 +87,7 @@ public class Player {
         }
         LocalTools.subCards(selfCards, actionResult);
         getNoticed(actionResult, role);
-        if (LocalTools.getNumberOfCards(selfCards) == 0) {
+        if (LocalTools.getSizeOfCards(selfCards) == 0) {
             Host.setWin(role);
         }
         return actionResult;

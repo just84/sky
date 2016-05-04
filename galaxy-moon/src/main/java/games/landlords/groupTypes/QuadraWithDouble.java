@@ -16,6 +16,6 @@ public class QuadraWithDouble extends AbstractGroupType {
 
     @Override
     public int getTop() {
-        return 0;
+        return CardModule.CARD_2.getValue();
     }
 }

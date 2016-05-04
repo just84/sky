@@ -49,7 +49,7 @@ public class Utils {
     }
 
     public static <T> Collection<Collection<T>> selectMfromN(Collection<T> N, int M){
-        if(M == 0 || N == null || N.isEmpty()){
+        if(M <= 0 || N == null || N.isEmpty() || N.size() < M){
             return Lists.newArrayList();
         }
         Collection<Collection<T>> results = Sets.newHashSet();
@@ -61,10 +61,17 @@ public class Utils {
             }
             return results;
         }
+        if(M == N.size()){
+            results.add(N);
+            return results;
+        }
+
+        Set<T> selected = Sets.newHashSet();
         for(T item : N){
+            selected.add(item);
             Set<T> tempN = Sets.newHashSet();
             tempN.addAll(N);
-            tempN.remove(item);
+            tempN.removeAll(selected);
             for (Collection<T> childResult : selectMfromN(tempN, M-1)) {
                 Set<T> result = Sets.newHashSet();
                 result.add(item);

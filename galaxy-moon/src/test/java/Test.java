@@ -1,9 +1,15 @@
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.*;
+import games.landlords.CardModule;
+import games.landlords.Cards;
+import games.landlords.GroupModule;
+import games.landlords.groupTypes.Boom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.Utils;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -54,6 +60,15 @@ public class Test {
     public static void main(String[] args) throws Exception {
 //        Host.start();
 
+        Cards cards = Cards.newEmptyCards();
+        cards.put(CardModule.CARD_3, 2);
+        cards.put(CardModule.CARD_4, 2);
+        cards.put(CardModule.CARD_5, 2);
+        cards.put(CardModule.CARD_6, 2);
+        cards.put(CardModule.CARD_7, 2);
+        System.out.println(GroupModule.Boom.analyse(cards));
+        System.out.println(GroupModule.Double.analyse(cards));
+        System.out.println(GroupModule.DoubleSentence.analyse(cards));
 
     }
 

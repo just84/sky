@@ -16,6 +16,6 @@ public class QuadraSentenceWithDouble extends AbstractGroupType {
 
     @Override
     public int getTop() {
-        return 0;
+        return CardModule.CARD_K.getValue();
     }
 }

@@ -38,7 +38,7 @@ public class LocalTools {
         return base;
     }
 
-    public static Integer getNumberOfCards(Cards cards) {
+    public static Integer getSizeOfCards(Cards cards) {
         if(cards == null){
             return 0;
         }
