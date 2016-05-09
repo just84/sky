@@ -184,4 +184,16 @@ public abstract class AbstractGroupType implements GroupType {
         this.attachCardSize = attachCardSize;
         this.attachCardLength = attachCardLength;
     }
+
+    @Override
+    public String toString() {
+        return "AbstractGroupType{" +
+                "mainCard=" + mainCard +
+                ", mainCardSize=" + mainCardSize +
+                ", mainCardLength=" + mainCardLength +
+                ", attachCards=" + attachCards +
+                ", attachCardSize=" + attachCardSize +
+                ", attachCardLength=" + attachCardLength +
+                '}';
+    }
 }

@@ -65,6 +65,18 @@ public class Cards {
         return newCards;
     }
 
+    public static Cards newCards(String s){
+        if(!s.matches("([2-9]|0|J|Q|K|A|B|R)*")){
+            throw new IllegalArgumentException("不合法的牌: "+s);
+        }
+        Cards newCards = newEmptyCards();
+        for(char c : s.toCharArray()){
+            CardModule cardModule = CardModule.getCardByName(c);
+            newCards.put(cardModule,newCards.get(cardModule) + 1);
+        }
+        return newCards;
+    }
+
     @Override
     public String toString() {
         String result = "";

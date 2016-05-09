@@ -30,7 +30,7 @@ public class DoubleSentence extends AbstractGroupType {
                 start = true;
                 startCard = card;
             }
-            if(cardSize == 0 && start){
+            if(cardSize != 2 && start){
                 if(card.getValue() - startCard.getValue() == size / 2){
                     setCardInfo(startCard, 2, size / 2);
                     return true;

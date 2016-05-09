@@ -13,6 +13,15 @@ import java.util.List;
 public class Single extends AbstractGroupType {
     @Override
     public boolean analyse(Cards cards) {
+        if(LocalTools.getSizeOfCards(cards) != 1){
+            return false;
+        }
+        for(CardModule card : CardModule.values()){
+            if(cards.get(card) == 1){
+                setCardInfo(card, 1, 1);
+                return true;
+            }
+        }
         return false;
     }
 
