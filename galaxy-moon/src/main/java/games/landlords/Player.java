@@ -2,6 +2,7 @@ package games.landlords;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import games.landlords.groupTypes.ActionInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.Map;
  */
 public class Player {
     private Map<Role, Cards> record;
-    private Cards allCardsRecord;
+    private Cards knownCardsRecord;
     private Cards unknownCardsRecord;
     private Cards selfCards;
     private Cards lastAction;
@@ -36,7 +37,7 @@ public class Player {
         record.put(Role.nPlayer, Cards.newEmptyCards());
         record.put(Role.pPlayer, Cards.newEmptyCards());
         selfCards = Cards.newEmptyCards();
-        allCardsRecord = Cards.newEmptyCards();
+        knownCardsRecord = Cards.newEmptyCards();
         unknownCardsRecord = Cards.newFullCards();
         lastActionRole = Role.landlord;
     }
@@ -47,15 +48,19 @@ public class Player {
 
     private void initCards(Cards cards) {
         LocalTools.addCards(selfCards, cards);
-        LocalTools.addCards(allCardsRecord, cards);
+        LocalTools.addCards(knownCardsRecord, cards);
         LocalTools.subCards(unknownCardsRecord, cards);
     }
 
-    public void getNoticed(Cards actionCards, Role actionRole) {
+    public void getNoticed(ActionInfo actionInfo) {
+        Cards actionCards = actionInfo.getActionCards();
+        Role actionRole = actionInfo.getActionRole();
         if (actionCards != null && LocalTools.getSizeOfCards(actionCards) != 0) {
             LocalTools.addCards(record.get(actionRole), actionCards);
-            LocalTools.addCards(allCardsRecord, actionCards);
-            LocalTools.subCards(unknownCardsRecord, actionCards);
+            if(actionRole.getIndex() != role.getIndex()) {
+                LocalTools.addCards(knownCardsRecord, actionCards);
+                LocalTools.subCards(unknownCardsRecord, actionCards);
+            }
             lastAction = actionCards;
             lastActionRole = actionRole;
         }
@@ -86,7 +91,7 @@ public class Player {
             }
         }
         LocalTools.subCards(selfCards, actionResult);
-        getNoticed(actionResult, role);
+        getNoticed(ActionInfo.newOne(role, actionResult));
         if (LocalTools.getSizeOfCards(selfCards) == 0) {
             Host.setWin(role);
         }
@@ -113,5 +118,21 @@ public class Player {
 
     public String showCards() {
         return selfCards.toString();
+    }
+
+    public String showAllInfo() {
+        return "Player{" +
+                "\n\trecord=" + record +
+                "\n\tknownCardsRecord=" + knownCardsRecord +
+                "\n\tunknownCardsRecord=" + unknownCardsRecord +
+                "\n\tselfCards=" + selfCards +
+                "\n\tlastAction=" + lastAction +
+                "\n\tlastActionRole=" + lastActionRole +
+                "\n\trole=" + role +
+                "\n}";
+    }
+
+    public Role getRole() {
+        return role;
     }
 }

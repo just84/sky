@@ -1,17 +1,38 @@
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.*;
+import com.sun.javafx.binding.StringFormatter;
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import games.landlords.CardModule;
 import games.landlords.Cards;
 import games.landlords.GroupModule;
+import games.landlords.Host;
 import games.landlords.groupTypes.Boom;
+import misc.ThreadPoolManager;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pojo.A;
+import pojo.B;
+import pojo.TestPoj;
+import utils.GzipUtils;
+import utils.JsonUtils;
 import utils.Utils;
 
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -20,13 +41,14 @@ import java.util.concurrent.*;
  */
 public class Test {
     private static final Logger logger = LoggerFactory.getLogger(Test.class);
+    private static final Joiner lineJoiner = Joiner.on("_").skipNulls();
     private static LoadingCache<A, String> cache = CacheBuilder.newBuilder()
             .maximumSize(300000)
-            .expireAfterWrite(10, TimeUnit.valueOf("MINUTES"))
+            .refreshAfterWrite(10, TimeUnit.MILLISECONDS)
             .build(new CacheLoader<A, String>() {
                 @Override
                 public String load(A s) throws Exception {
-                    logger.info("key:{},refreshed", s);
+                    logger.info("key:{},value:{},refreshed", s, cache.getIfPresent(s));
                     return s.getI() + System.currentTimeMillis();
                 }
             });
@@ -59,39 +81,42 @@ public class Test {
     }
 
     public static void main(String[] args) throws Exception {
-//        Host.start();
 
-        System.out.println(GroupModule.QuadraWithDouble.analyse(Cards.newCards("44442233")));
-        System.out.println(GroupModule.QuadraWithDouble.analyse(Cards.newCards("4422223")));
-        System.out.println(GroupModule.QuadraWithDouble.analyse(Cards.newCards("444422")));
-        System.out.println(GroupModule.QuadraWithSingle.analyse(Cards.newCards("444422")));
-        System.out.println(GroupModule.QuadraWithSingle.analyse(Cards.newCards("444423")));
-        System.out.println(GroupModule.QuadraWithSingle.analyse(Cards.newCards("4444233")));
+
+        Host.start();
+//        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+//        Validator validator = factory.getValidator();
+//
+//        A a = new A();
+//        a.setI("i");
+//        a.setJ("j");
+//        System.out.println(validator.validate(a));
     }
 
-    public static class A{
-        private static String i;
-        private static int j;
-
-        public A(){}
-        public A(String a,int b){
-            i=a;
-            j=b;
+    public static String load(String code) throws Exception {
+        if (Strings.isNullOrEmpty(code)) {
+            return code;
         }
-        public static String getI() {
-            return i;
+        if (code.charAt(2) != '0' || code.indexOf('0') == -1) {
+            return code;
         }
 
-        public static void setI(String pi) {
-            i = pi;
+        char[] bytes = new char[code.length()];
+        bytes[0] = code.charAt(0);
+        bytes[1] = code.charAt(1);
+
+        int i = 2;
+        int j = 2;
+
+        for (; i < code.length(); i++) {
+            if (code.charAt(i) != '0') {
+                break;
+            }
+        }
+        while (i < code.length()) {
+            bytes[j++] = code.charAt(i++);
         }
 
-        public static int getJ() {
-            return j;
-        }
-
-        public static void setJ(int pj) {
-            j = pj;
-        }
+        return new String(bytes, 0, j);
     }
 }

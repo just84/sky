@@ -2,11 +2,10 @@ package games.landlords;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import games.landlords.groupTypes.ActionInfo;
 import utils.SortUtils;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by yibin on 16/4/26.
@@ -14,6 +13,7 @@ import java.util.Map;
 public class Host {
     private static boolean win = false;
     private static Role winner = null;
+    private static LinkedList<ActionInfo> record = Lists.newLinkedList();
 
     public static void start() {
         Map<Double, CardModule> fullCards = Maps.newHashMap();
@@ -34,29 +34,30 @@ public class Host {
         players.add(new Player(getCards(fullCards, keys, 37, 17), Role.pPlayer));
 
         int round = 0;
-        Cards actionCards;
-        System.out.println("game start!");
-        System.out.println("landlord:\t" + players.get(0).showCards());
-        System.out.println("nPlayer:\t" + players.get(1).showCards());
-        System.out.println("pPlayer:\t" + players.get(2).showCards());
+        System.out.println("[HOST] game start!");
+        System.out.println("landlord:\n" + players.get(0).showAllInfo());
+        System.out.println("nPlayer:\n" + players.get(1).showAllInfo());
+        System.out.println("pPlayer:\n" + players.get(2).showAllInfo());
         while (!win) {
-            actionCards = players.get(round % 3).action();
-            players.get((round + 1) % 3).getNoticed(actionCards, Role.getRoleByIndex(round % 3));
-            players.get((round + 2) % 3).getNoticed(actionCards, Role.getRoleByIndex(round % 3));
+            Player player = players.get(round % 3);
+            ActionInfo actionInfo = ActionInfo.newOne(player.getRole(), player.action());
+            players.get((round + 1) % 3).getNoticed(actionInfo);
+            players.get((round + 2) % 3).getNoticed(actionInfo);
+            record.add(actionInfo);
             System.out.println();
-            System.out.println("role: " + Role.getRoleByIndex(round % 3).name());
-            System.out.println("action: " + actionCards.toString());
-            System.out.println("landlord:\t" + players.get(0).showCards());
-            System.out.println("nPlayer:\t" + players.get(1).showCards());
-            System.out.println("pPlayer:\t" + players.get(2).showCards());
+            System.out.println("[HOST] role: " + actionInfo.getActionRole().name());
+            System.out.println("[HOST] action: " + actionInfo.getActionCards().toString());
+            System.out.println("landlord:\n" + players.get(0).showAllInfo());
+            System.out.println("nPlayer:\n" + players.get(1).showAllInfo());
+            System.out.println("pPlayer:\n" + players.get(2).showAllInfo());
             round++;
         }
         System.out.println();
-        System.out.println(winner.name() + " win!");
-        System.out.println("game over!");
-        System.out.println("landlord:\t" + players.get(0).showCards());
-        System.out.println("nPlayer:\t" + players.get(1).showCards());
-        System.out.println("pPlayer:\t" + players.get(2).showCards());
+        System.out.println("[HOST] " + winner.name() + " win!");
+        System.out.println("[HOST] game over!");
+        System.out.println("landlord:\n" + players.get(0).showAllInfo());
+        System.out.println("nPlayer:\n" + players.get(1).showAllInfo());
+        System.out.println("pPlayer:\n" + players.get(2).showAllInfo());
     }
 
     private static Cards getCards(Map<Double, CardModule> fullCards, List<Double> keys, int start, int size) {
