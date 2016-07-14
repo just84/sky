@@ -13,19 +13,19 @@ public enum GroupModule {
     Single(new Single()),
     Double(new Double()),
     Triple(new Triple()),
-    Quadra(new Quadra()),
+    Quad(new Quad()),
     Boom(new Boom()),
     TripleWithSingle(new TripleWithSingle()),
     TripleWithDouble(new TripleWithDouble()),
-    QuadraWithSingle(new QuadraWithSingle()),
-    QuadraWithDouble(new QuadraWithDouble()),
+    QuadWithSingle(new QuadWithSingle()),
+    QuadWithDouble(new QuadWithDouble()),
     Sentence(new Sentence()),
     DoubleSentence(new DoubleSentence()),
     TripleSentence(new TripleSentence()),
     TripleSentenceWithSingle(new TripleSentenceWithSingle()),
     TripleSentenceWithDouble(new TripleSentenceWithDouble()),
-    QuadraSentenceWithSingle(new QuadraSentenceWithSingle()),
-    QuadraSentenceWithDouble(new QuadraSentenceWithDouble());
+    QuadSentenceWithSingle(new QuadSentenceWithSingle()),
+    QuadSentenceWithDouble(new QuadSentenceWithDouble());
 
     private GroupType groupType;
 
@@ -35,6 +35,12 @@ public enum GroupModule {
 
     public boolean analyse(Cards cards) {
         return groupType.analyse(cards);
+    }
+
+    public GroupType getGroupType() {
+        GroupType result = groupType;
+        groupType = groupType.newInstance();
+        return result;
     }
 
     public List<Cards> getSolution(Cards selfCards, Cards cards) {

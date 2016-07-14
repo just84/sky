@@ -29,4 +29,9 @@ public class Single extends AbstractGroupType {
     public int getTop() {
         return CardModule.CARD_RED_KING.getValue();
     }
+
+    @Override
+    public GroupType newInstance() {
+        return new Single();
+    }
 }

@@ -54,4 +54,9 @@ public class TripleSentenceWithDouble extends AbstractGroupType {
     public int getTop() {
         return CardModule.CARD_K.getValue();
     }
+
+    @Override
+    public GroupType newInstance() {
+        return new TripleSentenceWithDouble();
+    }
 }

@@ -44,4 +44,9 @@ public class DoubleSentence extends AbstractGroupType {
     public int getTop() {
         return CardModule.CARD_Q.getValue();
     }
+
+    @Override
+    public GroupType newInstance() {
+        return new DoubleSentence();
+    }
 }

@@ -4,6 +4,8 @@ import api.Processor;
 
 /**
  * Created by yibin on 16/4/7.
+ * 令牌桶限流
+ * 问题：令牌桶满了之后，遇到突发流量会出现1秒内的请求超过流量限制的情况
  */
 public class QPSLimiter {
     private int idle;

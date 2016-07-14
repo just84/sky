@@ -28,4 +28,9 @@ public class Double extends AbstractGroupType {
     public int getTop() {
         return CardModule.CARD_2.getValue();
     }
+
+    @Override
+    public GroupType newInstance() {
+        return new Double();
+    }
 }

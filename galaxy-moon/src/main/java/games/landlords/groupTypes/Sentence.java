@@ -44,4 +44,9 @@ public class Sentence extends AbstractGroupType {
     public int getTop() {
         return CardModule.CARD_10.getValue();
     }
+
+    @Override
+    public GroupType newInstance() {
+        return new Sentence();
+    }
 }

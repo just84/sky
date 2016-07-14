@@ -10,11 +10,9 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.*;
 import com.sun.javafx.binding.StringFormatter;
 import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
-import games.landlords.CardModule;
-import games.landlords.Cards;
-import games.landlords.GroupModule;
-import games.landlords.Host;
+import games.landlords.*;
 import games.landlords.groupTypes.Boom;
+import games.landlords.groupTypes.GroupType;
 import misc.ThreadPoolManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -84,6 +82,8 @@ public class Test {
 
 
         Host.start();
+
+
 //        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 //        Validator validator = factory.getValidator();
 //

@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by yibin on 16/4/27.
  */
-public class QuadraSentenceWithSingle extends AbstractGroupType {
+public class QuadSentenceWithSingle extends AbstractGroupType {
     @Override
     public boolean analyse(Cards cards) {
         int size = LocalTools.getSizeOfCards(cards);
@@ -53,5 +53,10 @@ public class QuadraSentenceWithSingle extends AbstractGroupType {
     @Override
     public int getTop() {
         return CardModule.CARD_K.getValue();
+    }
+
+    @Override
+    public GroupType newInstance() {
+        return new QuadSentenceWithSingle();
     }
 }

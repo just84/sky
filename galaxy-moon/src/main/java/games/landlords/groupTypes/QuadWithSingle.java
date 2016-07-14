@@ -10,28 +10,28 @@ import java.util.List;
 /**
  * Created by yibin on 16/4/26.
  */
-public class QuadraWithDouble extends AbstractGroupType {
+public class QuadWithSingle extends AbstractGroupType {
     @Override
     public boolean analyse(Cards cards) {
-        if(LocalTools.getSizeOfCards(cards) != 8){
+        if(LocalTools.getSizeOfCards(cards) != 6){
             return false;
         }
         CardModule mainCard = null;
         List<CardModule> attachCards = Lists.newArrayList();
         for(CardModule card : CardModule.values()){
             int cardSize = cards.get(card);
-            if(cardSize != 4 && cardSize != 2 && cardSize != 0){
+            if(cardSize != 4 && cardSize != 1 && cardSize != 0){
                 return false;
             }
             if(cardSize == 4){
                 mainCard = card;
             }
-            if(cardSize == 2){
+            if(cardSize == 1){
                 attachCards.add(card);
             }
         }
         if(mainCard != null && attachCards.size() == 2){
-            setCardInfo(mainCard, 4, 1, attachCards, 2, 2);
+            setCardInfo(mainCard, 4, 1, attachCards, 1, 2);
             return true;
         }
         return false;
@@ -40,5 +40,10 @@ public class QuadraWithDouble extends AbstractGroupType {
     @Override
     public int getTop() {
         return CardModule.CARD_2.getValue();
+    }
+
+    @Override
+    public GroupType newInstance() {
+        return new QuadWithSingle();
     }
 }

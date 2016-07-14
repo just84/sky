@@ -41,4 +41,9 @@ public class TripleWithDouble extends AbstractGroupType {
     public int getTop() {
         return CardModule.CARD_2.getValue();
     }
+
+    @Override
+    public GroupType newInstance() {
+        return new TripleWithDouble();
+    }
 }

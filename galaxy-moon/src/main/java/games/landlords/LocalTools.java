@@ -1,6 +1,7 @@
 package games.landlords;
 
 import com.google.common.collect.Maps;
+import games.landlords.groupTypes.GroupType;
 
 import java.util.Map;
 
@@ -47,5 +48,17 @@ public class LocalTools {
             size += i;
         }
         return size;
+    }
+
+    public static GroupType getGroupType(Cards cards){
+        if(cards == null || getSizeOfCards(cards) == 0){
+            return null;
+        }
+        for(GroupModule groupModule : GroupModule.values()){
+            if(groupModule.analyse(cards)){
+                return groupModule.getGroupType();
+            }
+        }
+        throw new RuntimeException("no suitable groupType, cards:"+cards);
     }
 }

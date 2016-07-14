@@ -24,12 +24,14 @@ public interface GroupType {
      * @param cards
      * @return
      */
-    boolean analyse(Cards cards);
+    public boolean analyse(Cards cards);
 
     /**
      * 取得主卡能达到的最高维的位置
      * 如，Single: 14, Double: 12, Sentence: 7
      * @return
      */
-    int getTop();
+    public int getTop();
+
+    public GroupType newInstance();
 }

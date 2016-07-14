@@ -2,8 +2,10 @@ package games.landlords;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import games.landlords.groupTypes.ActionInfo;
-import utils.SortUtils;
+import games.landlords.players.Landlords;
+import games.landlords.players.NPlayer;
+import games.landlords.players.PPlayer;
+import games.landlords.players.Player;
 
 import java.util.*;
 
@@ -29,9 +31,9 @@ public class Host {
         }
         Collections.sort(keys);
         List<Player> players = Lists.newLinkedList();
-        players.add(new Player(getCards(fullCards, keys, 0, 20), Role.landlord));
-        players.add(new Player(getCards(fullCards, keys, 20, 17), Role.nPlayer));
-        players.add(new Player(getCards(fullCards, keys, 37, 17), Role.pPlayer));
+        players.add(new Landlords(getCards(fullCards, keys, 0, 20)));
+        players.add(new NPlayer(getCards(fullCards, keys, 20, 17)));
+        players.add(new PPlayer(getCards(fullCards, keys, 37, 17)));
 
         int round = 0;
         System.out.println("[HOST] game start!");
@@ -40,7 +42,7 @@ public class Host {
         System.out.println("pPlayer:\n" + players.get(2).showAllInfo());
         while (!win) {
             Player player = players.get(round % 3);
-            ActionInfo actionInfo = ActionInfo.newOne(player.getRole(), player.action());
+            ActionInfo actionInfo = player.action();
             players.get((round + 1) % 3).getNoticed(actionInfo);
             players.get((round + 2) % 3).getNoticed(actionInfo);
             record.add(actionInfo);
