@@ -81,8 +81,11 @@ public class Test {
     public static void main(String[] args) throws Exception {
 
 
-        Host.start();
+//        Host.start();
 
+        Cards targetCards = Cards.newCards("55533");
+        Cards selfCards = Cards.newCards("22277766655443");
+        System.out.println(LocalTools.getGroupType(targetCards).getSolution(selfCards, targetCards));
 
 //        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 //        Validator validator = factory.getValidator();

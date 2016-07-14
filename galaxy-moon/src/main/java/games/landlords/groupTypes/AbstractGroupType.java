@@ -54,7 +54,7 @@ public abstract class AbstractGroupType implements GroupType {
             return null;
         }
 
-        if (attachCards != null && !attachCards.isEmpty()) {
+        if (attachCards == null || attachCards.isEmpty()) {
             return mainSolutions;
         }
 
@@ -79,7 +79,7 @@ public abstract class AbstractGroupType implements GroupType {
                             mainCard, mainCardSize, mainCardLength));
         }
         List<Cards> mainSolutions = Lists.newArrayList();
-        for (Integer index = mainCard.getValue() + 1; index <= getTop() - mainCardLength; index++) {
+        for (Integer index = mainCard.getValue() + 1; index <= getTop() - mainCardLength + 1; index++) {
             CardModule card = CardModule.getCardByValue(index);
             boolean usable = true;
             for (int i = index; i < index + mainCardLength; i++) {
