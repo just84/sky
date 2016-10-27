@@ -10,7 +10,7 @@ import java.util.Set;
  * Created by yibin on 16/4/26.
  */
 public class Cards {
-    Map<CardModule, Integer> cards;
+    private Map<CardModule, Integer> cards;
 
     private Cards(){
         cards = Maps.newHashMap();

@@ -1,36 +1,19 @@
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.BinaryTreeTraverser;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.*;
-import com.sun.javafx.binding.StringFormatter;
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
-import games.landlords.*;
-import games.landlords.groupTypes.Boom;
-import games.landlords.groupTypes.GroupType;
+import misc.MoneyCalculator;
 import misc.ThreadPoolManager;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
-import org.apache.http.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.A;
-import pojo.B;
-import pojo.TestPoj;
-import utils.GzipUtils;
-import utils.JsonUtils;
-import utils.Utils;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -80,12 +63,15 @@ public class Test {
 
     public static void main(String[] args) throws Exception {
 
+//        testSynchronized();
+
+        System.out.println(MoneyCalculator.debxByMouth(70000,7000,0.007,24,36));
 
 //        Host.start();
 
-        Cards targetCards = Cards.newCards("55533");
-        Cards selfCards = Cards.newCards("22277766655443");
-        System.out.println(LocalTools.getGroupType(targetCards).getSolution(selfCards, targetCards));
+//        Cards targetCards = Cards.newCards("55533");
+//        Cards selfCards = Cards.newCards("22277766655443");
+//        System.out.println(LocalTools.getGroupType(targetCards).getSolution(selfCards, targetCards));
 
 //        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 //        Validator validator = factory.getValidator();
@@ -94,6 +80,18 @@ public class Test {
 //        a.setI("i");
 //        a.setJ("j");
 //        System.out.println(validator.validate(a));
+    }
+
+    private static int test() {
+
+        int a = 0;
+        try {
+            System.out.println("a");
+            return a;
+        } finally {
+            System.out.println("b");
+            a =1;
+        }
     }
 
     public static String load(String code) throws Exception {
@@ -121,5 +119,49 @@ public class Test {
         }
 
         return new String(bytes, 0, j);
+    }
+
+    public static void testSynchronized(){
+
+        final TestSynchronized testSynchronized = new TestSynchronized();
+        final A a = new A();
+        ThreadPoolExecutor executor = ThreadPoolManager.newThreadPoolIfAbsent("thread",5,5,10);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(System.currentTimeMillis());
+                testSynchronized.print1();
+            }
+        });
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(System.currentTimeMillis());
+                new TestSynchronized().print1();
+            }
+        });
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(System.currentTimeMillis());
+                TestSynchronized.print2();
+            }
+        });
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(System.currentTimeMillis());
+                TestSynchronized.print3();
+            }
+        });
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(System.currentTimeMillis());
+                testSynchronized.print4();
+            }
+        });
+        executor.shutdown();
     }
 }
