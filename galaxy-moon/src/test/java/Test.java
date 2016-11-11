@@ -7,6 +7,8 @@ import com.google.common.collect.BinaryTreeTraverser;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.*;
+import games.game2048.Play2048;
+import games.landlords.Host;
 import misc.MoneyCalculator;
 import misc.ThreadPoolManager;
 import org.slf4j.Logger;
@@ -65,9 +67,24 @@ public class Test {
 
 //        testSynchronized();
 
-        System.out.println(MoneyCalculator.debxByMouth(70000,7000,0.007,24,36));
-
 //        Host.start();
+
+        Play2048.showData();
+        List<Integer> list = Play2048.getData();
+        list.set(0,2);
+        list.set(3,2);
+        list.set(5,2);
+        list.set(6,2);
+        list.set(9,2);
+        list.set(10,2);
+        list.set(12,2);
+        list.set(13,4);
+        list.set(15,2);
+        Play2048.showData();
+        Play2048.up();
+        Play2048.showData();
+        Play2048.up();
+        Play2048.showData();
 
 //        Cards targetCards = Cards.newCards("55533");
 //        Cards selfCards = Cards.newCards("22277766655443");
