@@ -39,7 +39,6 @@ public class Test {
     private static ListeningExecutorService listeningExecutorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(5));
     public static void todo(final String param, final CountDownLatch countDownLatch, final List<String> result) throws InterruptedException {
         ListenableFuture listenableFuture = listeningExecutorService.submit(new Callable<String>() {
-            @Override
             public String call() throws Exception {
                 Thread.sleep(100);
                 System.out.println("exec " + param);
@@ -49,13 +48,11 @@ public class Test {
             }
         });
         Futures.addCallback(listenableFuture, new FutureCallback<String>() {
-            @Override
             public void onSuccess(String s) {
                 System.out.println("success " + s);
                 countDownLatch.countDown();
             }
 
-            @Override
             public void onFailure(Throwable throwable) {
                 System.out.println("failed");
                 countDownLatch.countDown();
@@ -69,22 +66,22 @@ public class Test {
 
 //        Host.start();
 
-        Play2048.showData();
-        List<Integer> list = Play2048.getData();
-        list.set(0,2);
-        list.set(3,2);
-        list.set(5,2);
-        list.set(6,2);
-        list.set(9,2);
-        list.set(10,2);
-        list.set(12,2);
-        list.set(13,4);
-        list.set(15,2);
-        Play2048.showData();
-        Play2048.up();
-        Play2048.showData();
-        Play2048.up();
-        Play2048.showData();
+//        Play2048.showData();
+//        List<Integer> list = Play2048.getData();
+//        list.set(0,2);
+//        list.set(3,2);
+//        list.set(5,2);
+//        list.set(6,2);
+//        list.set(9,2);
+//        list.set(10,2);
+//        list.set(12,2);
+//        list.set(13,4);
+//        list.set(15,2);
+//        Play2048.showData();
+//        Play2048.up();
+//        Play2048.showData();
+//        Play2048.up();
+//        Play2048.showData();
 
 //        Cards targetCards = Cards.newCards("55533");
 //        Cards selfCards = Cards.newCards("22277766655443");
@@ -144,28 +141,24 @@ public class Test {
         final A a = new A();
         ThreadPoolExecutor executor = ThreadPoolManager.newThreadPoolIfAbsent("thread",5,5,10);
         executor.execute(new Runnable() {
-            @Override
             public void run() {
                 System.out.println(System.currentTimeMillis());
                 testSynchronized.print1();
             }
         });
         executor.execute(new Runnable() {
-            @Override
             public void run() {
                 System.out.println(System.currentTimeMillis());
                 new TestSynchronized().print1();
             }
         });
         executor.execute(new Runnable() {
-            @Override
             public void run() {
                 System.out.println(System.currentTimeMillis());
                 TestSynchronized.print2();
             }
         });
         executor.execute(new Runnable() {
-            @Override
             public void run() {
                 System.out.println(System.currentTimeMillis());
                 TestSynchronized.print3();
@@ -173,7 +166,6 @@ public class Test {
         });
 
         executor.execute(new Runnable() {
-            @Override
             public void run() {
                 System.out.println(System.currentTimeMillis());
                 testSynchronized.print4();
