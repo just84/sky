@@ -24,15 +24,11 @@ public class ForecastStock {
 
     public static void main(String[] args) throws Exception{
 //        buyAndSell();
-        dingtou("000001","2010-06-05","2014-06-05");
+        dingtou("000001","1990-01-01","2017-06-05");
 //        dingtou("000002","2014-06-05","2017-06-05");
 //        dingtou("000025","2014-06-05","2017-06-05");
     }
 
-    /**
-     * http://table.finance.yahoo.com/table.csv?s=
-     * 000001.sz 平安银行
-     */
     private static void buyAndSell() {
 
     }
@@ -50,19 +46,27 @@ public class ForecastStock {
                 double totalin = 0;
                 double totalout = 0;
                 double times = 0;
-                int hold = 0;
+                double hold = 0;
                 double holdvalue = 0;
+                int lastsellday = 0;
+                List<Integer> days = Lists.newArrayList();
                 for(int day =0;day<stockInfoList.size();day++){
                     if(stockInfoList.get(day).getClosePrice() * hold - holdvalue > holdvalue * sellpoint / 100){//超过卖点
                         totalin += stockInfoList.get(day).getClosePrice() * hold;
                         times ++;
                         hold = 0;
                         holdvalue = 0;
+                        days.add(day - lastsellday);
+                        lastsellday = day;
                     }
                     if(day % zhouqi == 0){//买入
-                        totalout += stockInfoList.get(day).getClosePrice();
-                        hold ++;
-                        holdvalue += stockInfoList.get(day).getClosePrice();
+//                        totalout += stockInfoList.get(day).getClosePrice();
+//                        hold ++;
+//                        holdvalue += stockInfoList.get(day).getClosePrice();
+                        double out = zhouqi * (totalout > 0 ? (totalin + holdvalue) / totalout : 1);
+                        totalout += out;
+                        hold += out / stockInfoList.get(day).getClosePrice();
+                        holdvalue += out;
                     }
                 }
                 Map<String,Object> map = Maps.newHashMap();
@@ -73,7 +77,11 @@ public class ForecastStock {
                 map.put("holdvalue",holdvalue);
                 map.put("zhouqi",zhouqi);
                 map.put("sellpoint",sellpoint);
+                map.put("minday",Utils.min(days));
+                map.put("maxday",Utils.max(days));
+                map.put("averageday",Utils.average(days));
                 result.add(map);
+                System.out.println(zhouqi+","+sellpoint);
             }
         }
 
@@ -89,6 +97,9 @@ public class ForecastStock {
                     , map.get("sellpoint")
                     , (Double)map.get("totalin") + (Double) map.get("holdvalue") - (Double)map.get("totalout")
                     , (Double)map.get("totalout") > 0 ? ((Double)map.get("totalin") + (Double) map.get("holdvalue")) / (Double)map.get("totalout") : 0
+                    , map.get("minday")
+                    , map.get("maxday")
+                    , map.get("averageday")
             );
             writer.write(s);
             writer.newLine();

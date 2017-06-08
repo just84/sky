@@ -49,6 +49,24 @@ public class Utils {
         return max;
     }
 
+    public static Integer min(Iterable<Integer> data) {
+        Integer min = Integer.MAX_VALUE;
+        for(Integer e : data){
+            min = min > e ? e : min;
+        }
+        return min;
+    }
+
+    public static Integer average(Iterable<Integer> data) {
+        Integer sum = 0;
+        Integer i = 0;
+        for(Integer e : data){
+            sum += e;
+            i++;
+        }
+        return sum / i;
+    }
+
     public static <T> Collection<Collection<T>> selectMfromN(Collection<T> N, int M){
         if(M <= 0 || N == null || N.isEmpty() || N.size() < M){
             return Lists.newArrayList();
