@@ -6,6 +6,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.JsonUtils;
@@ -23,12 +24,15 @@ public class ForecastStock {
     private static final Logger logger = LoggerFactory.getLogger(ForecastStock.class);
 
     public static void main(String[] args) throws Exception{
-//        buyAndSell();
-        dingtou("000001","1990-01-01","2017-06-05");
-//        dingtou("000002","2014-06-05","2017-06-05");
-//        dingtou("000025","2014-06-05","2017-06-05");
+        buyAndSell();
+//        dingtou("000001","1990-01-01","2017-06-05");
     }
 
+    /**
+     * 交易策略
+     * 目标：寻找最优的交易策略
+     * todo：1.进化算法；2.特征选取(各种统计特征，尽量多)；3.得到最优交易策略
+     */
     private static void buyAndSell() {
 
     }
