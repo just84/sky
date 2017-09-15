@@ -25,7 +25,7 @@ public class ForecastStock {
 
     public static void main(String[] args) throws Exception{
         buyAndSell();
-//        dingtou("000001","1990-01-01","2017-06-05");
+        dingtou("000001","1990-01-01","2017-06-05");
     }
 
     /**
