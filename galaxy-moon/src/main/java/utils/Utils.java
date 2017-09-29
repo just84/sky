@@ -64,7 +64,7 @@ public class Utils {
             sum += e;
             i++;
         }
-        return sum / i;
+        return i == 0 ? 0 : sum / i;
     }
 
     public static <T> Collection<Collection<T>> selectMfromN(Collection<T> N, int M){

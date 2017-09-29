@@ -29,7 +29,7 @@ import java.util.List;
 public class FetchService {
     private static final Logger logger = LoggerFactory.getLogger(FetchService.class);
     private static final CloseableHttpClient httpClient = HttpClients.createDefault();
-    private static final String historyDataUrl = "http://stock.liangyee.com/bus-api/stock/stockMarketData/getDailyKBar?";
+    private static final String historyDataUrl = "http://stock.liangyee.com/bus-api/stock/freeStockMarketData/getDailyKBar?";
 
     public static List<StockInfo> fetchHistoryData(String stockCode, String startDate, String endDate) {
         Preconditions.checkArgument(stockCode.matches("[0-9]{6}"));
@@ -44,7 +44,8 @@ public class FetchService {
                     .append("&userKey=ED340946E9DF4176866068E630DF7FD5")
                     .append("&symbol=").append(stockCode)
                     .append("&startDate=").append(startDate)
-                    .append("&endDate=").append(endDate);
+                    .append("&endDate=").append(endDate)
+                    .append("&type=").append(0);
             httpResponse = httpClient.execute(new HttpGet(sb.toString()));
             Data data = JsonUtils.deSerialize(EntityUtils.toString(httpResponse.getEntity(),Charsets.UTF_8),Data.class);
             List<StockInfo> resultList = Lists.newLinkedList();
