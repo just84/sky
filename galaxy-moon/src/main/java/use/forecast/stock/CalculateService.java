@@ -27,12 +27,12 @@ public class CalculateService {
 
     private static List<Integer> findSimilarities(Integer begin, Integer range, List<StockInfo> stockInfoList) {
         List<Integer> result = Lists.newArrayList();
-        Double like = stockInfoList.get(begin).getJudgeMap().get(range).getLike();
-        for (int index = begin + range; index > stockInfoList.size() - range; index++) {
-            if (calculatePercentSimilarity(stockInfoList, begin, index, range) > like) {
-                result.add(index);
-            }
-        }
+//        Double like = stockInfoList.get(begin).getJudgeMap().get(range).getLike();
+//        for (int index = begin + range; index > stockInfoList.size() - range; index++) {
+//            if (calculatePercentSimilarity(stockInfoList, begin, index, range) > like) {
+//                result.add(index);
+//            }
+//        }
         return result;
     }
 

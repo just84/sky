@@ -18,11 +18,7 @@ public class StockInfo {
     private Double lowPrice;
     private Double closePrice;
     private Long volume;
-    private Double adjClosePrice;
     private Double percent;
-
-    //key:检查天数n,value:最优的judge
-    private Map<Integer,Judge> judgeMap;
 
     public StockInfo(){}
 
@@ -90,27 +86,11 @@ public class StockInfo {
         this.volume = volume;
     }
 
-    public Double getAdjClosePrice() {
-        return adjClosePrice;
-    }
-
-    public void setAdjClosePrice(Double adjClosePrice) {
-        this.adjClosePrice = adjClosePrice;
-    }
-
     public Double getPercent() {
         return percent;
     }
 
     public void setPercent(Double percent) {
         this.percent = percent;
-    }
-
-    public Map<Integer, Judge> getJudgeMap() {
-        return judgeMap;
-    }
-
-    public void setJudgeMap(Map<Integer, Judge> judgeMap) {
-        this.judgeMap = judgeMap;
     }
 }
