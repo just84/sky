@@ -138,7 +138,7 @@ public class Test {
     public static void testSynchronized(){
 
         final TestSynchronized testSynchronized = new TestSynchronized();
-        final A a = new A();
+//        final A a = new A();
         ThreadPoolExecutor executor = ThreadPoolManager.newThreadPoolIfAbsent("thread",5,5,10);
         executor.execute(new Runnable() {
             public void run() {
