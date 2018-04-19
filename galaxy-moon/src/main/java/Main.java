@@ -6,7 +6,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.A;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.RandomAccessFile;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channel;
+import java.nio.channels.FileChannel;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.*;
@@ -16,10 +23,117 @@ import java.util.concurrent.locks.*;
  */
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
+    public void test(){
+        System.out.println("hello world");
+    }
 
     public static void main(String[] args) throws Exception {
-        testDeadLock();
+//        testDeadLock();
 //        testBlockingQueue();
+//        testHeapSort();
+        testNio();
+
+    }
+
+    private static void testNio() throws Exception{
+        FileChannel fileChannel = new RandomAccessFile("/Users/yibin/testNio.txt","rw").getChannel();
+        ByteBuffer byteBuffer = ByteBuffer.allocate(48);
+        int readSize = fileChannel.read(byteBuffer);
+        byte[] b = new byte[1024];
+        int index= 0;
+        while(readSize != -1){
+            System.out.println("readSize:"+readSize);
+            byteBuffer.flip();
+            byteBuffer.get(b,index,readSize);
+            index += readSize;
+            System.out.println(new String(b,0,index));
+            byteBuffer.clear();
+            readSize = fileChannel.read(byteBuffer);
+        }
+    }
+
+    private static void testHeapSort() {
+        List<Integer> s = new ArrayList<Integer>();
+        for(int i = 0; i < 10 ; i++){
+            s.add((int)(Math.random() * 100));
+        }
+        System.out.println(s);
+        List<Integer> minHeap = new ArrayList<Integer>(s.size());
+        for(Integer i : s){
+            inputIntoMinHeap(minHeap, i);
+        }
+        List<Integer> result = new ArrayList<Integer>();
+        System.out.println(minHeap);
+        for(int i = 0; i < minHeap.size() ; i++){
+            result.add(popMin(minHeap));
+        }
+        System.out.println(result);
+    }
+
+    private static Integer popMin(List<Integer> minHeap) {
+        int result = minHeap.get(0);
+        int findex = 0;
+        int lcindex,rcindex;
+        while (true){
+            minHeap.set(findex,null);
+            lcindex = getlcIndex(findex);
+            rcindex = getrcIndex(findex);
+            boolean havel = lcindex < minHeap.size() && minHeap.get(lcindex) != null;
+            boolean haver = rcindex < minHeap.size() && minHeap.get(rcindex) != null;
+            if(!havel && !haver){
+                break;
+            }
+            if(havel && haver){
+                if(minHeap.get(lcindex) > minHeap.get(rcindex)){
+                    minHeap.set(findex,minHeap.get(rcindex));
+                    findex = rcindex;
+                } else {
+                    minHeap.set(findex,minHeap.get(lcindex));
+                    findex = lcindex;
+                }
+                continue;
+            }
+            if(havel){
+                minHeap.set(findex,minHeap.get(lcindex));
+                findex = lcindex;
+            }
+            if(haver){
+                minHeap.set(findex,minHeap.get(rcindex));
+                findex = rcindex;
+            }
+        }
+        return result;
+    }
+
+    private static int getrcIndex(int findex) {
+        return 2 * findex + 2;
+    }
+
+    private static int getlcIndex(int findex) {
+        return 2 * findex + 1;
+    }
+
+    private static void inputIntoMinHeap(List<Integer> minHeap, Integer i) {
+        minHeap.add(i);
+        int index = minHeap.size() - 1;
+        while(index > 0 && compareAndSwap(minHeap,index)){
+            index = getFatherIndex(index);
+        }
+    }
+
+    private static int getFatherIndex(int index) {
+        return (index - 1) / 2;
+    }
+
+    private static boolean compareAndSwap(List<Integer> minHeap, int index) {
+        int findex = getFatherIndex(index);
+        if(minHeap.get(findex) > minHeap.get(index)){
+            int i = minHeap.get(findex);
+            minHeap.set(findex,minHeap.get(index));
+            minHeap.set(index,i);
+            return true;
+        }
+        return false;
     }
 
     public static void testDeadLock() throws Exception {
