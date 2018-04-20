@@ -2,9 +2,15 @@ import com.google.common.collect.Lists;
 import games.crossword.Crosswords;
 import misc.BlockingSingleQueue;
 import misc.ThreadPoolManager;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.A;
+import pojo.Dog;
+import pojo.Husky;
+import pojo.Poj;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,6 +20,9 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channel;
 import java.nio.channels.FileChannel;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.*;
@@ -31,8 +40,72 @@ public class Main {
 //        testDeadLock();
 //        testBlockingQueue();
 //        testHeapSort();
-        testNio();
+//        testNio();
+//        testJDKProxy();
+        testCGLib();
+    }
 
+    private static void testCGLib() {
+        CGLibProxy proxy = new CGLibProxy();
+        Husky husky = proxy.getProxy(Husky.class);
+        System.out.println(husky.getClass());
+        System.out.println(husky.getClass().getSuperclass());
+        System.out.println(husky.getClass().getSuperclass().getSuperclass());
+        husky.move();
+        husky.talk();
+    }
+
+    static class CGLibProxy implements MethodInterceptor {
+        public <T> T getProxy(Class<T> clazz){
+            return (T)Enhancer.create(clazz,this);
+        }
+
+        @Override
+        public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+            System.out.println("start intercept " + method.getName() + methodProxy.getSuperName());
+            Object r = methodProxy.invokeSuper(o,args);
+            System.out.println("end intercept ");
+            return r;
+        }
+    }
+
+
+    private static void testJDKProxy() throws Exception {
+
+        Poj a = new Poj();
+        InvocationHandler handler = new MyProxy(a);
+        Object d = Proxy.newProxyInstance(a.getClass().getClassLoader(),a.getClass().getInterfaces(),handler);
+//        System.out.println(d.color());
+//        System.out.println(a.move());
+        System.out.println(d.getClass());
+        System.out.println(d.getClass().getSuperclass());
+        System.out.println(d.getClass().getSuperclass().getSuperclass());
+        for (Method method : d.getClass().getMethods()) {
+            System.out.println(method.getName());
+            if(method.getName().equals("getName")){
+                method.invoke(d);
+            }
+        }
+    }
+
+    static class MyProxy implements InvocationHandler {
+
+        private Object obj;
+
+        public MyProxy(Object obj){
+            this.obj = obj;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            try {
+                System.out.println("start proxy " + proxy.getClass() + method.getName());
+                Object r = method.invoke(obj, args);
+                return r;
+            } finally {
+                System.out.println("end proxy " + proxy.getClass() + method.getName());
+            }
+        }
     }
 
     private static void testNio() throws Exception{

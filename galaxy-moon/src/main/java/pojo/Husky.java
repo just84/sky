@@ -5,39 +5,43 @@ package pojo;
  */
 public class Husky implements Dog,Action {
     private static Husky husky;
-    AbstractTalkAction abstractTalkAction = new AbstractTalkAction() {
+    Action action = new Action() {
         public String move() {
-            return null;
+            return "jump";
         }
-    };
-    AbstractMoveAction abstractMoveAction = new AbstractMoveAction() {
+
+        @Override
         public String talk() {
-            return null;
+            return "ao ao ao";
         }
     };
 
-    private Husky(){}
+    public Husky(){}
 
     public String color() {
+        System.out.println("color");
         return "black";
     }
 
     public String type() {
+        System.out.println("type");
         return "husky";
     }
 
-    public String move() {
-        return abstractMoveAction.move();
+    public final String move() {
+        System.out.println("move");
+        return action.move();
     }
 
     public String talk() {
-        return abstractTalkAction.talk();
+        System.out.println("talk");
+        return action.talk();
     }
 
-    public static Husky getInstance(){
-        if (husky == null) {
-            husky = new Husky();
-        }
-        return husky;
-    }
+//    public static Husky getInstance(){
+//        if (husky == null) {
+//            husky = new Husky();
+//        }
+//        return husky;
+//    }
 }
