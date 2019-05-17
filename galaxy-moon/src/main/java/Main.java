@@ -1,5 +1,7 @@
 import com.google.common.collect.Lists;
 import games.crossword.Crosswords;
+import games.game.of.life.Life;
+import games.game.of.life.Show;
 import misc.BlockingSingleQueue;
 import misc.ThreadPoolManager;
 import net.sf.cglib.proxy.Enhancer;
@@ -27,6 +29,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.*;
 
+import static javax.swing.JFrame.EXIT_ON_CLOSE;
+
 /**
  * Created by yibin on 16/3/15.
  */
@@ -37,13 +41,89 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
+//        testRWLock();
 //        testDeadLock();
 //        testBlockingQueue();
 //        testHeapSort();
 //        testNio();
 //        testJDKProxy();
-        testCGLib();
+//        testCGLib();
+
+        Life life = new Life();
+        int size  = Life.getSize();
+        life.startWithData(Life.旅行者枪());
+
     }
+
+    public static int turn(int n) {
+        String sn = Integer.valueOf(n).toString();
+        String ns = "";
+        for(char c : sn.toCharArray()) {
+            ns = c + ns;
+        }
+        return Integer.valueOf(ns);
+    }
+
+    public static String addBigNumber(String[] as){
+        int maxlen = 0;
+        for(String a : as){
+            maxlen = maxlen > a.length() ? maxlen : a.length();
+        }
+        String result = "";
+        int over = 0;
+        for(int i = 0;i<maxlen;i++){
+            int sum = addValueOfIndex(as,i);
+            sum += over;
+            result = sum % 10 + result;
+            over = sum / 10;
+
+        }
+        if(over>0){
+            result = over + result;
+        }
+        return result;
+    }
+
+    public static int addValueOfIndex(String[] as, int index){
+        int sum = 0;
+        for(String a : as){
+            sum += index < a.length() ? a.charAt(a.length() - 1 - index) - 48 : 0;
+        }
+        return sum;
+    }
+
+    public static String addBigNumber(String a, String b) {
+        if (a == null || a.isEmpty() || b == null || b.isEmpty()) {
+            return null;
+        }
+        String result = "";
+        int maxlen = a.length() < b.length() ? b.length() : a.length();
+        boolean over = false;
+        for (int i = 0; i < maxlen; i++) {
+            int ai = i < a.length() ? a.charAt(a.length() - 1 - i) - 48 : 0;
+            int bi = i < b.length() ? b.charAt(b.length() - 1 - i) - 48 : 0;
+            if (ai > 9 || bi > 9 || ai < 0 || bi < 0) {
+                return null;
+            }
+            int sum = ai + bi + (over ? 1 : 0);
+            result = sum % 10 + result;
+            over = sum > 9;
+        }
+        if(over){
+            result = 1+result;
+        }
+        return result;
+    }
+
+    int s(int n) {
+        String sn = Integer.valueOf(n).toString();
+        String ns = "";
+        for(char c : sn.toCharArray()) {
+            ns = c + ns;
+        }
+        return Integer.valueOf(ns);
+    }
+
 
     private static void testCGLib() {
         CGLibProxy proxy = new CGLibProxy();
@@ -72,20 +152,15 @@ public class Main {
 
     private static void testJDKProxy() throws Exception {
 
-        Poj a = new Poj();
+        Husky a = new Husky();
         InvocationHandler handler = new MyProxy(a);
-        Object d = Proxy.newProxyInstance(a.getClass().getClassLoader(),a.getClass().getInterfaces(),handler);
-//        System.out.println(d.color());
+        Dog d = (Dog)Proxy.newProxyInstance(a.getClass().getClassLoader(),a.getClass().getInterfaces(),handler);
+        System.out.println(d.color());
 //        System.out.println(a.move());
-        System.out.println(d.getClass());
-        System.out.println(d.getClass().getSuperclass());
-        System.out.println(d.getClass().getSuperclass().getSuperclass());
-        for (Method method : d.getClass().getMethods()) {
-            System.out.println(method.getName());
-            if(method.getName().equals("getName")){
-                method.invoke(d);
-            }
-        }
+//        System.out.println(d.getClass());
+//        System.out.println(d.getClass().getSuperclass());
+//        System.out.println(d.getClass().getSuperclass().getSuperclass());
+
     }
 
     static class MyProxy implements InvocationHandler {
@@ -545,7 +620,7 @@ public class Main {
         executorService.shutdown();
     }
 
-    private void testRWLock() throws Exception {
+    public static void testRWLock() throws Exception {
         final misc.ReadWriteLock readWriteLock = new misc.ReadWriteLock();
         final long now = System.currentTimeMillis();
         Runnable r = new Runnable() {

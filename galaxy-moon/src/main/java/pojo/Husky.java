@@ -18,7 +18,7 @@ public class Husky implements Dog,Action {
 
     public Husky(){}
 
-    public String color() {
+    public final String color() {
         System.out.println("color");
         return "black";
     }

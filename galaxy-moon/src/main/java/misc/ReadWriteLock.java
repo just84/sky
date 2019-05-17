@@ -16,13 +16,15 @@ public class ReadWriteLock {
     private final AtomicBoolean isWriting = new AtomicBoolean(false);
 
     public void readLock() {
-        try {
-            while (isWriting.get()) {
-                Thread.sleep(10);
+        synchronized (isWriting) {
+            try {
+                while (isWriting.get()) {
+                    Thread.sleep(10);
+                }
+                isReading.set(isReading.get() + 1);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            isReading.set(isReading.get() + 1);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         System.out.println("readLock" + isReading.get());
     }
@@ -32,15 +34,17 @@ public class ReadWriteLock {
         System.out.println("readUnLock" + isReading.get());
     }
 
-    public synchronized void writeLock() {
-        try {
-            while (isWriting.get() || isReading.get() > 0) {
-                System.out.println("waiting" + isWriting.get() + isReading.get());
-                Thread.sleep(10);
+    public void writeLock() {
+        synchronized (isWriting) {
+            try {
+                while (isWriting.get() || isReading.get() > 0) {
+                    System.out.println("waiting" + isWriting.get() + isReading.get());
+                    Thread.sleep(10);
+                }
+                isWriting.set(true);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            isWriting.set(true);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
