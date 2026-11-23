@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by yibin on 16/4/26.
+ * Created by yibin on 16/4/26.。
  */
 public class Cards {
     private Map<CardModule, Integer> cards;
